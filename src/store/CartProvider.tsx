@@ -9,36 +9,23 @@ type Item = {
   price: number | null;
   amount: number | null;
 };
-type State = {
-  items: [
-    item: {
-      name?: string;
-      description?: string;
-      price: number | null;
-      amount: number | null;
-    }
-  ];
+type CartState = {
+  items: [];
   totalAmount: number;
 };
 
-type Action = {
-  item: {
-    name?: string;
-    description?: string;
-    price: number | null;
-    amount: number | null;
-  } | null;
+type CartAction = {
+  item: {price: number, amount: number}
   type: string;
-  id?: string;
+//   id?: string;
 };
 
 const defaultCartState = { items: [], totalAmount: 0 };
 
-const cartReducer = (state: State, action: Action) => {
+const cartReducer = (state: CartState, action: CartAction) => {
   if (action.type === 'ADD_ITEM') {
-    const updatedItems = [...state.items].push(action.item!);
+    const updatedItems = [...state.items].push(action.item);
 
-    // concat(action.item!);
     const updatedTotalAmount =
       state.totalAmount + action.item!.price! + action.item!.amount!;
     return { items: updatedItems, totalAmount: updatedTotalAmount };
@@ -48,10 +35,7 @@ const cartReducer = (state: State, action: Action) => {
 };
 
 const CartProvider = (props: CartProviderProps) => {
-  const [cartState, dispatchCart] = useReducer<Reducer<State, {type: string;id?: string;}>>(
-    cartReducer,
-    defaultCartState
-  );
+  const [cartState, dispatchCart] = useReducer(cartReducer, defaultCartState);
 
   const addItemToCartHandler = (item: Item) => {
     dispatchCart({ type: 'ADD_ITEM', item: item });
