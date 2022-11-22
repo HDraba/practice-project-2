@@ -4,7 +4,7 @@ import styles from './MealItem.module.css';
 import MealItemForm from './MealItemForm';
 
 type MealItem = {
-  id?: string | undefined;
+  id: string | null;
   name: string;
   description: string;
   price: number;
@@ -17,7 +17,6 @@ const MealItem = (props: MealItem) => {
 
   const addToCartHandler = (amount: number) => {
     cartCtx.addItem({
-
       id: props.id,
       name: props.name,
       amount: amount,

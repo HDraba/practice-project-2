@@ -2,7 +2,9 @@ import { PropsWithChildren, useReducer, Reducer } from 'react';
 import CartContext from './cart-context';
 
 export type Item = {
-  // name?: string,
+  id: string | null;
+  name: string;
+//   description: string;
   price: number;
   amount: number;
 };

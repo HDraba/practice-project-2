@@ -3,16 +3,17 @@ import styles from './Input.module.css';
 
 interface InputProps {
   label: string;
-  id: string
-  input: InputHTMLAttributes<HTMLInputElement>
-};
+  id: string;
+  input: InputHTMLAttributes<HTMLInputElement>;
+}
 
-const Input = React.forwardRef((props: InputProps, ref) => {
-    const inputRef = ref
+type Ref = HTMLInputElement
+
+const Input = React.forwardRef<Ref, InputProps>((props: InputProps, ref) => {
   return (
     <div className={styles.input}>
       <label htmlFor={props.id}>{props.label}</label>
-      <input ref={inputRef} {...props.input} />
+      <input ref={ref} {...props.input} />
     </div>
   );
 });
