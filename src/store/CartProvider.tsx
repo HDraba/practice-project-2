@@ -1,41 +1,44 @@
 import { PropsWithChildren, useReducer, Reducer } from 'react';
 import CartContext from './cart-context';
 
-type CartProviderProps = PropsWithChildren<{}>;
-
-type Item = {
-  name?: string;
-  description?: string;
-  price: number | null;
-  amount: number | null;
+export type Item = {
+  // name?: string,
+  price: number;
+  amount: number;
 };
+
 type CartState = {
-  items: [];
+  items: Item[];
   totalAmount: number;
 };
 
 type CartAction = {
-  item: {price: number, amount: number}
-  type: string;
-//   id?: string;
+  type: 'ADD_ITEM' | 'REMOVE_ITEM';
+  id?: string | null;
+  item?: Item | null;
 };
 
-const defaultCartState = { items: [], totalAmount: 0 };
+const defaultCartState = { 
+    items: [], 
+    totalAmount: 0 
+};
 
 const cartReducer = (state: CartState, action: CartAction) => {
   if (action.type === 'ADD_ITEM') {
-    const updatedItems = [...state.items].push(action.item);
-
+    const updatedItems = [...state.items].concat(action.item!);
     const updatedTotalAmount =
-      state.totalAmount + action.item.price + action.item.amount!;
+      state.totalAmount + action.item!.price + action.item!.amount!;
     return { items: updatedItems, totalAmount: updatedTotalAmount };
   }
 
   return defaultCartState;
 };
 
-const CartProvider = (props: CartProviderProps) => {
-  const [cartState, dispatchCart] = useReducer<Reducer<CartState, CartAction>>(cartReducer, defaultCartState);
+const CartProvider = (props: PropsWithChildren) => {
+  const [cartState, dispatchCart] = useReducer<Reducer<CartState, CartAction>>(
+    cartReducer,
+    defaultCartState
+  );
 
   const addItemToCartHandler = (item: Item) => {
     dispatchCart({ type: 'ADD_ITEM', item: item });
