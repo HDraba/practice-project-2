@@ -18,14 +18,14 @@ type CartAction = {
   item?: Item | null;
 };
 
-const defaultCartState = { 
-    items: [], 
-    totalAmount: 0 
+const defaultCartState = {
+  items: [],
+  totalAmount: 0,
 };
 
 const cartReducer = (state: CartState, action: CartAction) => {
   if (action.type === 'ADD_ITEM') {
-    const updatedItems = [...state.items].concat(action.item!);
+    const updatedItems = state.items.concat(action.item!);
     const updatedTotalAmount =
       state.totalAmount + action.item!.price + action.item!.amount!;
     return { items: updatedItems, totalAmount: updatedTotalAmount };
