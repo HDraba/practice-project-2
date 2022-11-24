@@ -59,7 +59,7 @@
 }
 
 .cart-item button:hover,
-.cart-item button:active {
+.cart-item button:active, .cart-item button:focus {
   background-color: #8a2b06;
   color: white;
 }
