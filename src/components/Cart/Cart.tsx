@@ -6,7 +6,9 @@ import CartContext from '../../store/cart-context';
 import Modal from '../UI/Modal';
 import CartItem from './CartItem';
 import { Item } from '../../store/CartProvider';
-import Checkout from './Checkout';
+// import Checkout from './Checkout';
+import Checkout from './CheckoutWithReducer';
+
 
 type CartProps = {
   onHideCart: () => void;
