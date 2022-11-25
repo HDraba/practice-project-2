@@ -1,4 +1,5 @@
 import { PropsWithChildren, useReducer, Reducer } from 'react';
+import { convertTypeAcquisitionFromJson } from 'typescript';
 import CartContext from './cart-context';
 
 export type Item = {
@@ -14,7 +15,7 @@ type CartState = {
 };
 
 type CartAction = {
-  type: 'ADD_ITEM' | 'REMOVE_ITEM';
+  type: 'ADD_ITEM' | 'REMOVE_ITEM' | 'CLEAR_CART';
   id?: string | null;
   item?: Item | null;
 };
@@ -68,6 +69,10 @@ const cartReducer = (state: CartState, action: CartAction) => {
     return {items: updatedItems, totalAmount: updatedTotalAmount}
   }
 
+  if (action.type === 'CLEAR_CART') {
+    return defaultCartState
+  }
+
   return defaultCartState;
 };
 
@@ -85,11 +90,16 @@ const CartProvider = (props: PropsWithChildren) => {
     dispatchCart({ type: 'REMOVE_ITEM', id: id });
   };
 
+  const clearCartHandler = () => {
+    dispatchCart({type: 'CLEAR_CART'})
+  }
+
   const cartContext = {
     items: cartState.items,
     totalAmount: cartState.totalAmount,
     addItem: addItemToCartHandler,
     removeItemById: removeItemFromCartHandler,
+    clearCart: clearCartHandler
   };
   return (
     <CartContext.Provider value={cartContext}>
