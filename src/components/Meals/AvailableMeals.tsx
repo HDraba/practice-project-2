@@ -17,10 +17,18 @@ const FIREBASE_URL =
 
 const AvailableMeals = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [httpError, setHttpError] = useState<null | string>(null);
 
   useEffect(() => {
     const fetchMeals = async () => {
+      setIsLoading(false);
       const response = await fetch(FIREBASE_URL);
+
+      if (!response.ok) {
+        throw new Error('Something went wrong');
+      }
+
       const data = await response.json();
 
       const loadedMeals: Meal[] = [];
@@ -35,9 +43,30 @@ const AvailableMeals = () => {
       console.log(loadedMeals);
 
       setMeals(loadedMeals);
+      setIsLoading(false);
     };
-    fetchMeals();
+    fetchMeals().catch((error) => {
+      setIsLoading(false);
+      setHttpError(error.message);
+    });
   }, []);
+
+  if (isLoading) {
+    console.log(isLoading);
+    return (
+      <section className={styles.MealsLoading}>
+        <p>Loading...</p>
+      </section>
+    );
+  }
+
+  if (httpError) {
+    return (
+      <section className={styles.MealsError}>
+        <p>{httpError}</p>
+      </section>
+    );
+  }
 
   const mealsList = meals.map((meal) => {
     return (
