@@ -1,17 +1,23 @@
 import { FormEvent, useRef, useState } from 'react';
 import styles from './Checkout.module.css';
 
+export type UserData = {
+  name: string;
+  street: string;
+  post: string;
+  city: string;
+};
+
 type CheckoutProps = {
   onClose: () => void;
+  onConfirm: (userData: UserData) => void;
 };
 
 const isEmpty = (value: string) => value.trim() === '';
 const isFiveChars = (value: string) => value.trim().length === 5;
 
 const Checkout = (props: CheckoutProps) => {
-  
-  // set them as valid to not get any errors at start 
-  // comment out for reducer
+  // set them as valid to not get any errors at start
   const [formInputsValidity, setFormInputsValidity] = useState({
     name: true,
     street: true,
@@ -34,17 +40,16 @@ const Checkout = (props: CheckoutProps) => {
 
     const enteredNameIsValid = !isEmpty(enteredName);
     const enteredStreetIsValid = !isEmpty(enteredStreet);
-    const enteredPostIsValid = !isEmpty(enteredPost);
-    const enteredCityIsValid =
-      isFiveChars(enteredCity) && !isEmpty(enteredCity);
+    const enteredPostIsValid =
+      !isEmpty(enteredPost) && isFiveChars(enteredPost);
+    const enteredCityIsValid = !isEmpty(enteredCity);
 
-    // comment out for reducer 
     setFormInputsValidity({
       name: enteredNameIsValid,
       street: enteredStreetIsValid,
       post: enteredPostIsValid,
-      city: enteredCityIsValid
-    })
+      city: enteredCityIsValid,
+    });
 
     const formIsValid =
       enteredNameIsValid &&
@@ -55,39 +60,55 @@ const Checkout = (props: CheckoutProps) => {
     if (!formIsValid) {
       return;
     }
-    props.onClose();
+    props.onConfirm({
+      name: enteredName,
+      street: enteredStreet,
+      post: enteredPost,
+      city: enteredCity,
+    });
 
-    console.log(nameRef.current!.value);
+    // props.onClose();
   };
 
   return (
     <form className={styles.form} onSubmit={submitHandler}>
-      <div className={` ${styles.control} ${formInputsValidity.name ? '' : styles.invalid}`}>
+      <div
+        className={` ${styles.control} ${
+          formInputsValidity.name ? '' : styles.invalid
+        }`}
+      >
         <label htmlFor="name">Your Name</label>
         <input ref={nameRef} type="text" id="name" />
         {!formInputsValidity.name && <p>Enter a valid name</p>}
       </div>
-      <div className={` ${styles.control} ${formInputsValidity.street ? '' : styles.invalid}`}>
-
+      <div
+        className={` ${styles.control} ${
+          formInputsValidity.street ? '' : styles.invalid
+        }`}
+      >
         <label htmlFor="street">Street</label>
         <input ref={streetRef} type="text" id="street" />
         {!formInputsValidity.street && <p>Enter a valid street</p>}
       </div>
-      <div className={` ${styles.control} ${formInputsValidity.post ? '' : styles.invalid}`}>
-
+      <div
+        className={` ${styles.control} ${
+          formInputsValidity.post ? '' : styles.invalid
+        }`}
+      >
         <label htmlFor="post">Postcode</label>
         <input ref={postRef} type="text" id="post" />
         {!formInputsValidity.post && <p>Enter a valid postcode</p>}
-
       </div>
-      <div className={` ${styles.control} ${formInputsValidity.city ? '' : styles.invalid}`}>
-
+      <div
+        className={` ${styles.control} ${
+          formInputsValidity.city ? '' : styles.invalid
+        }`}
+      >
         <label htmlFor="city">City</label>
         <input ref={cityRef} type="text" id="city" />
         {!formInputsValidity.city && <p>Enter a valid city</p>}
-
       </div>
-    .  <div className={styles.actions}>
+      <div className={styles.actions}>
         <button type="button" onClick={props.onClose}>
           Cancel
         </button>

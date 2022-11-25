@@ -6,36 +6,52 @@ import CartContext from '../../store/cart-context';
 import Modal from '../UI/Modal';
 import CartItem from './CartItem';
 import { Item } from '../../store/CartProvider';
-// import Checkout from './Checkout';
-import Checkout from './CheckoutWithReducer';
-
+import Checkout, { UserData } from './Checkout';
+// import Checkout from './CheckoutWithReducer';
 
 type CartProps = {
   onHideCart: () => void;
 };
 
 const Cart = (props: CartProps) => {
-  const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false)
+  const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
 
-  const CartCtx = useContext(CartContext);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [didSubmit, setDidSubmit] = useState<boolean>(false);
 
-  const totalAmount = `$${CartCtx.totalAmount.toFixed(2)}`;
-  const hasItems = CartCtx.items.length > 0;
+  const cartCtx = useContext(CartContext);
+
+  const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
+  const hasItems = cartCtx.items.length > 0;
 
   const cartItemRemoveHandler = (id: string) => {
-    CartCtx.removeItemById(id)
+    cartCtx.removeItemById(id);
   };
   const cartItemAddHandler = (item: Item) => {
-    CartCtx.addItem({...item, amount: 1})
+    cartCtx.addItem({ ...item, amount: 1 });
   };
 
   const orderHandler = () => {
-    setIsCheckingOut(true)
-  }
+    setIsCheckingOut(true);
+  };
+
+  const submitOrderHandler = (userData: UserData) => {
+    setIsSubmitting(true);
+    fetch(
+      'https://react-typescript-290e9-default-rtdb.europe-west1.firebasedatabase.app/orders.json',
+      {
+        method: 'POST',
+        body: JSON.stringify({ user: userData, orderedItems: cartCtx.items }),
+      }
+    ).then(() => {
+      setIsSubmitting(false);
+      setDidSubmit(true);
+    });
+  };
 
   const cartItems = (
     <ul className={styles['cart-items']}>
-      {CartCtx.items.map((item) => {
+      {cartCtx.items.map((item) => {
         return (
           <CartItem
             key={item.id}
@@ -50,26 +66,51 @@ const Cart = (props: CartProps) => {
     </ul>
   );
 
-      const modalActions = (
-        <div className={styles.actions}>
-        <button onClick={props.onHideCart} className={styles['button--alt']}>
-          Close
+  const modalActions = (
+    <div className={styles.actions}>
+      <button onClick={props.onHideCart} className={styles['button--alt']}>
+        Close
+      </button>
+      {hasItems && (
+        <button className={styles.button} onClick={orderHandler}>
+          Order
         </button>
-        {hasItems && <button className={styles.button} onClick={orderHandler}>Order</button>}
-      </div>
-      )
+      )}
+    </div>
+  );
 
-  return (
-    <Modal onHideCart={props.onHideCart}>
+  const cartModalContent = (
+    <>
       {cartItems}
       <div className={styles.total}>
         <span>Total Amount</span>
-        <span>totalAmount</span>
+        <span>${cartCtx.totalAmount.toFixed(2)}</span>
       </div>
-      {isCheckingOut && <Checkout onClose={props.onHideCart} />}
-      {!isCheckingOut &&
-      modalActions
-      }
+      {isCheckingOut && (
+        <Checkout onConfirm={submitOrderHandler} onClose={props.onHideCart} />
+      )}
+      {!isCheckingOut && modalActions}
+    </>
+  );
+
+  const isSubmittingModalContent = <p>Sending order data...</p>;
+
+  const didSubmitModalContent = (
+    <>
+      <p>Successfully sent the order!</p>
+      <div className={styles.actions}>
+        <button className={styles.Dismiss} type="button" onClick={props.onHideCart}>
+          Dismiss
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <Modal onHideCart={props.onHideCart}>
+      {!isSubmitting && !didSubmit && cartModalContent}
+      {isSubmitting && isSubmittingModalContent}
+      {!isSubmitting && didSubmit && didSubmitModalContent}
     </Modal>
   );
 };
