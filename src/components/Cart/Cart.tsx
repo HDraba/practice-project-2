@@ -6,11 +6,18 @@ import CartContext from '../../store/cart-context';
 import Modal from '../UI/Modal';
 import CartItem from './CartItem';
 import { Item } from '../../store/CartProvider';
-import Checkout, { UserData } from './Checkout';
-// import Checkout from './CheckoutWithReducer';
+// import { UserData } from './Checkout';
+import Checkout from './CheckoutWithReducer';
 
 type CartProps = {
   onHideCart: () => void;
+};
+
+type UserData = {
+  name: string;
+  street: string;
+  post: string;
+  city: string;
 };
 
 const Cart = (props: CartProps) => {

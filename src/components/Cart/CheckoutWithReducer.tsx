@@ -1,14 +1,18 @@
 import { FormEvent, useRef, useState } from 'react';
+import { UserData } from './Checkout';
 import styles from './Checkout.module.css';
 
 type CheckoutProps = {
   onClose: () => void;
+  onConfirm: (userData: UserData) => void;
+
 };
 
 const isEmpty = (value: string) => value.trim() === '';
 const isFiveChars = (value: string) => value.trim().length === 5;
 
 const Checkout = (props: CheckoutProps) => {
+
   // set them as valid to not get any errors at start
   // comment out for reducer
   /* 
